@@ -3,7 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 
-> **In Press**: HAUSCR YSA 2026 · Q4 2026
+> Official implementation for the paper accepted by **HAUSCR YSA Volume 11**.
 
 ---
 
@@ -18,7 +18,7 @@ This repository implements a **D-GCN-LSTM-Seq2Seq model with physical constraint
 - 12-step ahead prediction (60 minutes) of 7 physical fields
 - Automatic flood front centroid extraction and velocity analysis
 
-> **For comparison**, we also provide two baseline models: pure LSTM (no spatial graph) and static GCN-LSTM (fixed KNN graph). All three models share identical optimization settings (`AdamW`, `lr=5e-5`, `weight_decay=1e-4`, gradient clipping) and random seed 42.
+> **For comparison**, we also provide two baseline models: pure LSTM (no spatial graph) and static GCN-LSTM (fixed KNN graph). All three models share identical optimization settings (`AdamW`, `lr=5e-5`, `weight_decay=1e-4`, gradient clipping `max_norm=1.0`) and random seed 42.
 
 | Model | File | Role |
 | :--- | :--- | :--- |
@@ -93,7 +93,7 @@ Flood-Prediction/
 └── LICENSE
 ```
 
-**Dataset**: `dataset/` contains `probe_coords.csv` and 7 feature files (`Ux`, `Uy`, `Uz`, `k`, `p`, `nut`, `ε`) at 24 virtual probe locations, downsampled to 5‑minute intervals. Raw simulation: 22,800 s → 76 time steps → 33 training sequences via sliding window. Features are standardized using `StandardScaler` fitted on the training set only.
+**Dataset**: `dataset/` contains `probe_coords.csv` and 7 feature files (`Ux`, `Uy`, `Uz`, `k`, `p`, `nut`, `ε`) at 24 virtual probe locations, downsampled to 5‑minute intervals. Raw simulation: 22,800 s → 76 time steps → 33 training sequences via sliding window (`INPUT_WINDOW=32`, `OUTPUT_WINDOW=12`). Features are standardized using `StandardScaler` fitted on the training set only.
 
 ---
 
@@ -155,11 +155,13 @@ Each run generates:
 
 ## 📜 License
 
-MIT License. See [LICENSE](LICENSE) for details.
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
 
 ---
 
 ## 📝 Citation
+
+If you use this code or dataset in your research, please cite:
 
 ```bibtex
 @article{yu2026flood,
@@ -174,7 +176,7 @@ MIT License. See [LICENSE](LICENSE) for details.
 
 ## 📧 Contact
 
-Open an issue on GitHub.
+For questions or issues, please open a GitHub Issue.
 
 ---
 
