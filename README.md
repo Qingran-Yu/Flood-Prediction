@@ -137,12 +137,13 @@ See code docstrings for detailed mathematical formulations.
 
 ## 📊 Output Files
 
-Each run generates:
-- **Loss curves**: `training_loss_curve.png`, `train_val_metrics_curve.png`
-- **Metrics**: `metrics_per_timestep_curve.png`, `test_metrics_bar.png`, `test_evaluation_metrics.csv`, `test_metrics_per_timestep.csv`
-- **Scatter plots**: `true_vs_pred_*.png` (All Features + 7 individual features)
-- **Front trajectory**: `true_pred_front_trajectory_combined.png`, `pred_flood_front_trajectory.png`, `front_trajectory_velocity_labels.png`, `front_instant_velocity.png`, `front_velocity_distribution.png`, `velocity_true_vs_pred.png`
-- **Graph visualization**: `spatial_graph_with_weights.png` (D-GCN only) / `graph_structure.png` (GCN only)
+| Category | Files |
+| :--- | :--- |
+| **Loss curves** | `training_loss_curve.png`, `train_val_metrics_curve.png` |
+| **Metrics** | `metrics_per_timestep_curve.png`, `test_metrics_bar.png`, `test_evaluation_metrics.csv`, `test_metrics_per_timestep.csv` |
+| **Scatter plots** | `true_vs_pred_*.png` (All Features + 7 individual features) |
+| **Front trajectory** | `true_pred_front_trajectory_combined.png`, `pred_flood_front_trajectory.png`, `front_trajectory_velocity_labels.png`, `front_instant_velocity.png`, `front_velocity_distribution.png`, `velocity_true_vs_pred.png` |
+| **Graph visualization** | `spatial_graph_with_weights.png` (D-GCN only) · `graph_structure.png` (GCN only) |
 
 ---
 
