@@ -3,21 +3,28 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 
-> Official implementation for the paper accepted by **HAUSCR YSA 2026**. Released to ensure full reproducibility.
+> **In Press**: HAUSCR YSA 2026 · Q4 2026
 
 ---
 
 ## 📦 Overview
 
-This repository implements three models for flood front prediction using CFD probe data—the virtual counterpart to the **Mobile Spherical Sensing Unit (MSSU)** hardware:
+This repository implements a **D-GCN-LSTM-Seq2Seq model with physical constraint loss** for flood front prediction using **CFD probe data**—the virtual counterpart to the **Mobile Spherical Sensing Unit (MSSU) hardware**.
 
-| Model | File | Description |
+**Key features**:
+- Velocity-Guided Dynamic Acyclic Graph (VGDAG) — real-time topology adaptation based on flow velocity and direction
+- Sparse edge attention for efficient message passing on dynamic graphs
+- Physics-informed loss (velocity bounds, spatial gradients, flow direction)
+- 12-step ahead prediction (60 minutes) of 7 physical fields
+- Automatic flood front centroid extraction and velocity analysis
+
+> **For comparison**, we also provide two baseline models: pure LSTM (no spatial graph) and static GCN-LSTM (fixed KNN graph). All three models share identical optimization settings (`AdamW`, `lr=5e-5`, `weight_decay=1e-4`, gradient clipping) and random seed 42.
+
+| Model | File | Role |
 | :--- | :--- | :--- |
-| **D-GCN-LSTM-Seq2Seq (Proposed)** | `d_gcn_lstm_seq2seq.py` | Velocity-Guided Dynamic Acyclic Graph (VGDAG) with sparse edge attention + LSTM Seq2Seq. Graph topology adapts to real-time flow velocity and direction. |
-| **GCN-LSTM (Baseline)** | `gcn_lstm_seq2seq.py` | Standard GCN with static KNN graph (K=4) + LSTM Seq2Seq. Graph topology is fixed. |
-| **Pure LSTM (Baseline)** | `lstm_seq2seq.py` | No spatial graph. All node features flattened into a single vector. Pure temporal baseline. |
-
-**Fair comparison guarantee**: All three models share identical optimization settings (`AdamW`, `lr=5e-5`, `weight_decay=1e-4`, gradient clipping `max_norm=1.0`) and random seed 42. Performance differences are attributable **solely to the graph structure** (dynamic vs. static vs. none).
+| **D-GCN-LSTM-Seq2Seq** | `d_gcn_lstm_seq2seq.py` | **Proposed model** — dynamic graph with VGDAG |
+| GCN-LSTM | `gcn_lstm_seq2seq.py` | Baseline — static KNN graph |
+| Pure LSTM | `lstm_seq2seq.py` | Baseline — no spatial graph |
 
 ---
 
@@ -56,70 +63,49 @@ pip install -r requirements.txt
 
 ### 4. Run training + evaluation
 
-**Proposed model**:
+**Run the proposed model**:
 ```bash
 python d_gcn_lstm_seq2seq.py
 ```
 
-**Baselines (for reproducing comparative experiments)**:
+**Run baselines (for reproducing comparative experiments)**:
 ```bash
-python gcn_lstm_seq2seq.py   # Static GCN-LSTM
-python lstm_seq2seq.py       # Pure LSTM
+python gcn_lstm_seq2seq.py   # Static GCN-LSTM baseline
+python lstm_seq2seq.py       # Pure LSTM baseline
 ```
 
-All outputs are saved to `results_dgcn/`, `results_gcn/`, and `results_lstm/`, respectively.
+All outputs are saved to `results_dgcn/` (proposed model), `results_gcn/` (GCN baseline), and `results_lstm/` (LSTM baseline), respectively.
 
 ---
 
-## 📂 Dataset
+## 📁 Repository Structure
 
-All simulation data are in `dataset/`:
+```
+Flood-Prediction/
+├── d_gcn_lstm_seq2seq.py    # Proposed D-GCN-LSTM-Seq2Seq
+├── gcn_lstm_seq2seq.py      # Static GCN-LSTM baseline
+├── lstm_seq2seq.py          # Pure LSTM baseline
+├── dataset/                 # CSV files (7 physical fields, 24 probes)
+├── results_dgcn/            # Outputs: plots, CSV metrics, model weights
+├── results_gcn/             # Baseline outputs
+├── results_lstm/            # Baseline outputs
+├── requirements.txt
+└── LICENSE
+```
 
-| File | Description |
-|------|-------------|
-| `probe_coords.csv` | 24 probe coordinates (x, y, z in meters) |
-| `Ux.csv`, `Uy.csv`, `Uz.csv` | Velocity components (m/s) |
-| `p.csv` | Pressure (Pa) |
-| `k.csv`, `nut.csv`, `epsilon.csv` | Turbulence quantities |
-
-**Simulation details**:
-- Raw simulation: 22,800 s at 1 s intervals
-- Downsampled to 300 s intervals → 76 time steps
-- Sliding window: `INPUT_WINDOW=32`, `OUTPUT_WINDOW=12` → 33 training sequences
-
-**Preprocessing**: `StandardScaler` fitted exclusively on the training set; same scaling applied to validation and test sets to prevent information leakage.
+**Dataset**: `dataset/` contains `probe_coords.csv` and 7 feature files (`Ux`, `Uy`, `Uz`, `k`, `p`, `nut`, `ε`) at 24 virtual probe locations, downsampled to 5‑minute intervals. Raw simulation: 22,800 s → 76 time steps → 33 training sequences via sliding window. Features are standardized using `StandardScaler` fitted on the training set only.
 
 ---
 
-## 📊 Output Files
+## 📈 Performance Results
 
-All outputs are saved to separate directories. Each script generates the following files in its respective `results_*` folder:
+| Model | MSE | RMSE | MAE | R² |
+| :--- | :--- | :--- | :--- | :--- |
+| **D-GCN-LSTM-Seq2Seq** (Proposed) | **0.000582** | **0.0241** | **0.0182** | **0.999** |
+| GCN-LSTM (Baseline) | 0.00270 | 0.0519 | 0.0303 | 0.997 |
+| Pure LSTM (Baseline) | 0.00392 | 0.0626 | 0.0368 | 0.996 |
 
-### Common Files (All Models)
-
-| File | Description |
-|------|-------------|
-| `training_loss_curve.png` | Training and validation loss over 40 epochs |
-| `train_val_metrics_curve.png` | MSE, RMSE, MAE, R² curves over epochs |
-| `metrics_per_timestep_curve.png` | MSE, RMSE, MAE across 12 prediction steps (5–60 min) |
-| `test_metrics_bar.png` | Test set metrics bar chart |
-| `test_evaluation_metrics.csv` | Overall test metrics (MSE, RMSE, MAE, R²) |
-| `test_metrics_per_timestep.csv` | Per-step metrics (12 rows) |
-| `true_vs_pred_*.png` | Scatter plots: ground truth vs prediction (All Features + 7 individual features) |
-| `true_pred_front_trajectory_combined.png` | True vs predicted flood front trajectory (side-by-side) |
-| `pred_flood_front_trajectory.png` | Predicted flood front trajectory only |
-| `front_trajectory_velocity_labels.png` | Front trajectory with velocity labels at each time step |
-| `front_instant_velocity.png` | Instantaneous front velocity over time |
-| `front_velocity_distribution.png` | Histogram of front velocities |
-| `velocity_true_vs_pred.png` | True vs predicted front velocity comparison |
-
-### Model-Specific Files
-
-| Model | Additional Files |
-| :--- | :--- |
-| **D-GCN (Proposed)** | `spatial_graph_with_weights.png` — dynamic spatial graph with edge weights (color + width encode attention strength) |
-| **GCN-LSTM (Baseline)** | `graph_structure.png` — static KNN graph (unweighted, fixed topology) |
-| **Pure LSTM** | (none) |
+**D-GCN reduces MSE by 85.2% vs. LSTM and 78.4% vs. GCN-LSTM.**
 
 ---
 
@@ -149,31 +135,38 @@ See code docstrings for detailed mathematical formulations.
 
 ---
 
+## 📊 Output Files
+
+Each run generates:
+- **Loss curves**: `training_loss_curve.png`, `train_val_metrics_curve.png`
+- **Metrics**: `metrics_per_timestep_curve.png`, `test_metrics_bar.png`, `test_evaluation_metrics.csv`, `test_metrics_per_timestep.csv`
+- **Scatter plots**: `true_vs_pred_*.png` (All Features + 7 individual features)
+- **Front trajectory**: `true_pred_front_trajectory_combined.png`, `pred_flood_front_trajectory.png`, `front_trajectory_velocity_labels.png`, `front_instant_velocity.png`, `front_velocity_distribution.png`, `velocity_true_vs_pred.png`
+- **Graph visualization**: `spatial_graph_with_weights.png` (D-GCN only) / `graph_structure.png` (GCN only)
+
+---
+
 ## 💻 Requirements
 
-Tested on:
-- **Python 3.10.11**
-- Dependencies are listed in `requirements.txt`
+- Python 3.10.11
+- Dependencies listed in `requirements.txt`
 
 ---
 
 ## 📜 License
 
-This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for details.
+MIT License. See [LICENSE](LICENSE) for details.
 
 ---
 
 ## 📝 Citation
 
-If you use this code or dataset in your research, please cite:
-
 ```bibtex
 @article{yu2026flood,
   title     = {An Efficient Flood Prediction Method Considering Upstream-Downstream Correlations with Limited Data},
   author    = {Yu, Qingran},
-  journal   = {Young Scholars Academic (HAUSCR YSA)},
-  year      = {2026},
-  note      = {Accepted, in production}
+  journal   = {HAUSCR YSA},
+  year      = {2026}
 }
 ```
 
@@ -181,7 +174,7 @@ If you use this code or dataset in your research, please cite:
 
 ## 📧 Contact
 
-For questions or issues, please open a GitHub Issue.
+Open an issue on GitHub.
 
 ---
 
