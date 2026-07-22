@@ -76,7 +76,6 @@ class Config:
     TEACHER_FORCING_RATIO = 0.7
     KNN_K = 4
     TARGET_PROBES = 24
-    BASE_RADIUS = 32.0
     NUM_FRONT_NODES = 8
     COLOR_PALETTE = {"train_loss": "#2E86AB", "val_loss": "#A23B72", "front": "#6A994E"}
 
@@ -166,7 +165,7 @@ def physical_constraint_loss(preds_scaled: torch.Tensor, probe_coords: np.ndarra
     return constraint_loss
 
 # ===================== Build Static KNN Graph =====================
-def build_static_knn_graph(probe_coords: np.ndarray) -> Tuple[torch.Tensor, np.ndarray, np.ndarray]:
+def build_static_knn_graph(probe_coords: np.ndarray) -> torch.Tensor:
     """
     Construct a static undirected KNN graph based on Euclidean distance.
 
@@ -175,15 +174,11 @@ def build_static_knn_graph(probe_coords: np.ndarray) -> Tuple[torch.Tensor, np.n
 
     Returns:
         edge_index: (2, E) edge indices.
-        speed: dummy array (for compatibility with existing plotting code).
-        radius: dummy array (for compatibility with existing plotting code).
     """
     print("\n" + "="*20 + " Construct Standard Static KNN Graph " + "="*20)
     N = len(probe_coords)
     kdtree = KDTree(probe_coords)
     edge_list = []
-    radius = np.full(N, Config.BASE_RADIUS)
-    speed = np.zeros(N)
 
     for src in range(N):
         _, indices = kdtree.query(probe_coords[src], k=Config.KNN_K+1)
@@ -191,7 +186,7 @@ def build_static_knn_graph(probe_coords: np.ndarray) -> Tuple[torch.Tensor, np.n
             edge_list.append([src, dst])
 
     edge_index = torch.tensor(edge_list, dtype=torch.long).t().contiguous().to(Config.DEVICE)
-    return edge_index, speed, radius
+    return edge_index
 
 # ===================== Static Graph Visualization =====================
 def plot_static_graph(probe_coords: np.ndarray, edge_index: torch.Tensor) -> None:
@@ -691,8 +686,7 @@ def load_and_preprocess_data() -> Tuple[np.ndarray, np.ndarray, None, List[int],
             p_data = t_data[t_data["probe_id"] == pid]
             if not p_data.empty:
                 feat_tensor[t_idx, p_idx] = p_data[feat_names].values[0]
-
-    # No standardization here – return raw data and a placeholder scaler (None)
+                
     scaler = None
     print(f"Data loading completed: Feature tensor shape {feat_tensor.shape} (raw, unscaled)")
     return feat_tensor, probe_coords, scaler, unique_probes, num_probes
@@ -847,7 +841,7 @@ def train_and_predict() -> None:
 
     feat_tensor, probe_coords, _, _, num_probes = load_and_preprocess_data()
 
-    edge_index, _, _ = build_static_knn_graph(probe_coords)
+    edge_index = build_static_knn_graph(probe_coords)
 
     plot_static_graph(probe_coords, edge_index)
 
