@@ -3,7 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 
-> Official implementation for the paper accepted by **HAUSCR YSA Volume 11**.
+> Official implementation for the paper accepted by **Summer 2026 Volume of Young Scholars Academic**.
 
 ---
 
@@ -59,7 +59,7 @@ pip install torch==2.0.1 --index-url https://download.pytorch.org/whl/cu118
 pip install -r requirements.txt
 ```
 
-> **Note**: If you are unsure, use Option A. It will work on any machine. For GPU acceleration, ensure you have NVIDIA drivers and CUDA 11.8 installed.
+> **Note**: If you are unsure, use Option A — it works on any machine. For GPU acceleration, ensure NVIDIA drivers and CUDA 11.8 are installed. If you encounter errors with `torch-scatter` or `torch-sparse` (PyTorch Geometric dependencies), refer to the [official PyG installation guide](https://pytorch-geometric.readthedocs.io/en/latest/install/installation.html) for platform-specific wheels.
 
 ### 4. Run training + evaluation
 
