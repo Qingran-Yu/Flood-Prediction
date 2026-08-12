@@ -3,7 +3,11 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 
-> Official implementation for the paper accepted by **Summer 2026 Volume of Young Scholars Academic**.
+> This repository serves as the official implementation for **both** the journal paper accepted by *Young Scholars Academic (YSA)*, Volume 11 (**D-GCN-LSTM-Seq2Seq**), and the S.-T. Yau High School Science Award submission (**VGDAG-STNN**). The codebase is identical; the name was changed for the competition to emphasize the core innovation—the **V**elocity-**G**uided **D**ynamic **A**cyclic **G**raph (VGDAG)—rather than the underlying architecture. To reproduce the results, run:
+
+```bash
+python d_gcn_lstm_seq2seq.py
+```
 
 ---
 
@@ -181,4 +185,4 @@ For questions or issues, please open a GitHub Issue.
 
 ---
 
-**Last updated**: July 2026
+**Last updated**: August 2026
