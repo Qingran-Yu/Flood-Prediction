@@ -6,6 +6,7 @@
 > This repository serves as the official implementation for **two related submissions**:
 > 1. **D-GCN-LSTM-Seq2Seq** — Accepted by *Young Scholars Academic (YSA)*, Volume 11 (to appear Oct 2026).
 > 2. **VGDAG-STNN** — Submitted to the S.-T. Yau High School Science Award (2026).
+> 
 > The codebase is identical; the name was updated for the competition to emphasize the core innovation — the **V**elocity-**G**uided **D**ynamic **A**cyclic **G**raph (VGDAG) — rather than the underlying architecture.
 
 ---
