@@ -3,12 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.10](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 
-> This repository serves as the official implementation for **two related submissions**:
-> 1. **D-GCN-LSTM-Seq2Seq** — Accepted by *Young Scholars Academic (YSA)*, Volume 11 (to appear Oct 2026).
-> 2. **VGDAG-STNN** — Submitted to the S.-T. Yau High School Science Award (2026).
-> 
-> The codebase is identical; the name was updated for the competition to emphasize the core innovation — the **V**elocity-**G**uided **D**ynamic **A**cyclic **G**raph (VGDAG) — rather than the underlying architecture.
-
+> Official implementation for the paper accepted by Summer 2026 Volume of Young Scholars Academic.
 ---
 
 ## 📦 Overview
